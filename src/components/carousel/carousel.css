@@ -1,0 +1,11 @@
+.carousel-wrapper{
+    overflow: hidden;
+    width: 100%;
+}
+.carousel-tracker{
+    display:flex; 
+    transition: transform 0.4s ease-in-out; 
+}
+.carousel-item{
+    min-width:100%; 
+}

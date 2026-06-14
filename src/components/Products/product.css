@@ -1,0 +1,3 @@
+/* legacy product styles removed
+   This project now uses Tailwind utility classes for the product list layout.
+   Kept the file to avoid accidental import removal elsewhere. */
