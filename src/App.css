@@ -1,10 +1,10 @@
-*{
+/* *{
   margin: 0; 
   padding: 0; 
   box-sizing:border-box; 
-}
+} */
 
-.App{
+/* .App{
   width: 100%; 
   min-height: 100vh; 
   display: flex; 
@@ -12,4 +12,4 @@
   justify-content:center;
   padding: 40px; 
   background: white;
-}
+} */

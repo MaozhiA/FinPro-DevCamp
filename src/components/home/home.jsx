@@ -1,11 +1,15 @@
 import Carousel from '../carousel/carousel.jsx';
+import Products from '../Products/product.jsx';
 
 const Home = () => {
     return (
         <div>
-            <h1>Home</h1>
+        
             <Carousel />
+            <Products />
         </div>
+
+
     );
 };
 

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
+import FinPro from '../../assets/FinPro (1).png';
 import './login.css';
 
 
@@ -43,41 +44,131 @@ const Login = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 ">
-      <div className="w-full max-w-sm space-y-8 ">
+ return (
+  <div className="min-h-screen bg-white flex items-center justify-center px-6">
+    <div className="w-full max-w-md">
 
-        <h2>Login</h2>
+      
+      <div className="mb-12">
+        <h1 className=" flex justify-center items-center" >
+          <img 
+          src={FinPro}
+          alt="FinPro"
+          className="h-64 w-64 flex object-cover "
+          />
+        </h1>
 
-      <form onSubmit={handleSubmit(onSubmit)}
-        className="space-y-8">
+      </div>
 
-        <div>
-          <label className="block mb-3 text-sm font-medium ">Username:</label>
+    
+      <div className="mb-10">
+        <h2 className="text-3xl font-semibold text-black">
+          Sign in
+        </h2>
 
-          <input {...register("username")} 
-          placeholder="Enter your username"
-          className="w-full border-b border-gray-300 py-3 outline-none focus:border-slate-900 placeholder:text-sm "/>
+      </div>
 
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-6"
+      >
+        
+        <div className="flex justify-between">
+          <label className="block text-sm font-medium text-black mb-2">
+            Username
+          </label>
+            </div> 
+
+            <div>
+          <input
+            {...register("username")}
+            placeholder="Enter your username"
+            className="
+              w-full
+              border-b
+              border-gray-300
+              py-3
+              text-black
+              placeholder:text-gray-400
+              focus:border-black
+              focus:outline-none
+              transition
+            "
+          />
         </div>
 
+     
         <div>
-          <label className="block mb-3 text-sm font-medium ">Password:</label>
 
-          <input type="password" {...register("password")} 
-          placeholder="Enter your password"
-          className="w-full border-b border-gray-300 py-3 outline-none focus:border-slate-900 placeholder:text-sm "/>
+          <div className="flex justify-between items-center mb-2">
+            <label className="block text-sm font-medium text-black">
+              Password
+            </label>
+
+            <a
+              href="#"
+              className="text-sm text-gray-600 hover:text-black"
+            >
+              Forgot Password?
+            </a>
+          </div>
+
+          <input
+            type="password"
+            {...register("password")}
+            placeholder="Enter your password"
+            className="
+              w-full
+              border-b
+              border-gray-300
+              py-3
+              text-black
+              placeholder:text-gray-400
+              focus:border-black
+              focus:outline-none
+              transition
+            "
+          />
         </div>
 
-        <button type="submit" className="login-button">Login</button>
+    
+        <button
+          type="submit"
+          className="
+            w-full
+            bg-[#001580]
+            text-white
+            py-3
+            font-medium
+            rounded-md
+            hover:bg-gray-900
+            transition
+          "
+        >
+          Log In
+        </button>
       </form>
 
-      <p className="mt-6 text-sm text-gray-500">
-        Dont have an account ? <a href="/register" className="text-blue-500 hover:underline">Sign up</a>
+      
+      <div className="mt-8 flex justify-between text-sm">
+        <p className="text-gray-500">
+          New customer?
+        </p>
+
+        <a
+          href="/register"
+          className="text-black font-medium hover:underline"
+        >
+          Create account
+        </a>
+      </div>
+
+      <p className="mt-12 text-xs text-gray-400">
+        Protected by enterprise-grade security and encryption.
       </p>
     </div>
-    </div>
-  );
+  </div>
+);
 };
 
 export default Login;
