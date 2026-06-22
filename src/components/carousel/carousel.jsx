@@ -5,19 +5,19 @@ const slides = [
     category: "Device Contracts",
     title: "Get the latest devices on flexible contracts",
     subtitle: "Phones, laptops, tablets — from R850/month",
-    cta: "View devices",
+    // cta: "View devices",
   },
   {
     category: "Investments",
     title: "Grow your wealth with our investment plans",
     subtitle: "Short-term, long-term and Islamic options available",
-    cta: "Explore investments",
+    // cta: "Explore investments",
   },
   {
     category: "Insurance",
     title: "Protect what matters most",
     subtitle: "Life cover, funeral cover and retail insurance",
-    cta: "Get a quote",
+    // cta: "Get a quote",
   },
 ];
 
@@ -51,18 +51,17 @@ const Carousel = () => {
         <p className="text-slate-500 text-base mb-8 max-w-xl">
           {slide.subtitle}
         </p>
-        <button className="border border-slate-900 text-slate-900 text-sm font-medium px-6 py-3 rounded-full hover:bg-slate-900 hover:text-white transition">
+        {/* <button className="border border-slate-900 text-slate-900 text-sm font-medium px-6 py-3 rounded-full hover:bg-slate-900 hover:text-white transition">
           {slide.cta}
-        </button>
+        </button> */}
 
-        {/* Controls */}
         <div className="flex items-center gap-6 mt-10">
-          <button
+          {/* <button
             onClick={previous}
             className="text-slate-400 hover:text-slate-900 text-sm transition"
           >
             ← Previous
-          </button>
+          </button> */}
 
           <div className="flex gap-2 items-center">
             {slides.map((_, i) => (
@@ -78,12 +77,12 @@ const Carousel = () => {
             ))}
           </div>
 
-          <button
+          {/* <button
             onClick={next}
             className="text-slate-400 hover:text-slate-900 text-sm transition"
           >
             Next →
-          </button>
+          </button> */}
         </div>
 
       </div>

@@ -1,54 +1,102 @@
-import {Link} from 'react-router-dom'
+import { useEffect, useState } from 'react';
+import { auth } from '../../firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Navbar = () => {
+    const [user, setUser] = useState(null);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+            setUser(currentUser);
+        });
+
+        return unsubscribe;
+    }, []);
+
+    const handleLogout = async () => {
+        await signOut(auth);
+        navigate('/login-startup');
+    };
 
     return (
-        <nav className="bg0white border-b border-slate-200 shadow-sm">
-            <div className="mx-auto max-w-screen-2xl px-6">
-                <div className="flex h-16 items-center justify-between">
+        <nav className="w-full bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
 
-                    <Link 
-                    to="/"
-                    className="text-xl font-bold text-slate-900"
-                    >
-                        FinPro
+   
+            <div className="font-bold text-[#001580]">
+                InsureTechGuard
+            </div>
+
+      
+            <div className="flex gap-6 text-sm">
+
+                <Link to="/home" className="hover:text-black text-gray-600">
+                    Home
+                </Link>
+
+                <Link to="/products" className="hover:text-black text-gray-600">
+                    Products
+                </Link>
+
+       
+                {user && !user.isAnonymous && (
+                    <Link to="/client-profile" className="hover:text-black text-gray-600">
+                        Profile
                     </Link>
+                )}
+            </div>
 
-                    <div className="flex items-center gap-6">
-                        <Link 
-                        to="/products"
-                        className="text-slate-600 hover:text-sky-600"
-                        >
-                            Products
+ 
+            <div className="flex gap-4 items-center">
+
+        
+                {!user && (
+                    <>
+                        <Link to="/login" className="text-sm text-gray-600 hover:text-black">
+                            Login
                         </Link>
 
-                         <Link 
-                        to="/cart"
-                        className="text-slate-600 hover:text-sky-600"
-                        >
-                            Cart
+                        <Link to="/register" className="text-sm text-gray-600 hover:text-black">
+                            Register
                         </Link>
+                    </>
+                )}
 
-                         <Link 
-                        to="/subscriptions"
-                        className="text-slate-600 hover:text-sky-600"
+      
+                {user && !user.isAnonymous && (
+                    <>
+                        <span className="text-xs px-3 py-1 rounded-full bg-gray text-green-700 border border-green-300">
+                            Logged In
+                        </span>
+
+                        <button
+                            onClick={handleLogout}
+                            className="text-sm text-red-600 hover:text-red-800"
                         >
-                            Subscriptions
-                        </Link>
+                            Logout
+                        </button>
+                    </>
+                )}
 
-                         <Link 
-                        to="/home"
-                        className="text-slate-600 hover:text-sky-600"
+         
+                {user && user.isAnonymous && (
+                    <>
+                        <span className="text-xs px-3 py-1 rounded-full bg-gray text-yellow-700 border border-yellow-300">
+                            Guest
+                        </span>
+
+                        <button
+                            onClick={handleLogout}
+                            className="text-sm text-red-600 hover:text-red-800"
                         >
-                            Account
-                        </Link>
-
-
-                    </div>
-
-                </div>
+                            Exit Guest
+                        </button>
+                    </>
+                )}
             </div>
         </nav>
     );
-}; 
+};
+
 export default Navbar;
