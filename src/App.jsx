@@ -11,6 +11,8 @@ import NewArrivalsPage from './components/home/new-arrivals.jsx';
 import LoginStart from './components/login-startup/login-startup.jsx';
 import VerifyEmail from './components/email/verify-email.jsx';
 import ClientProfile from './components/profile/client-profile.jsx';
+import ProfileVerification from './components/verification/profile-verification.jsx'
+import FileDialgoue from './components/filepicker/dialogue.jsx'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useLocation } from 'react-router-dom';
@@ -47,6 +49,10 @@ function App() {
 
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/client-profile" element={<ClientProfile />} />
+          <Route path="/profile-verification" element={<ProfileVerification />} />
+          <Route path="/dialogue" element={<FileDialgoue />} />
+           
+          
 
           <Route path="/products" element={<Products />} />
           <Route path="/recommended" element={<RecommendedPage />} />

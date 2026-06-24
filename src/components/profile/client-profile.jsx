@@ -24,8 +24,7 @@ const buildAuthHeaders = (token) => {
 
   return {
     Authorization: `Bearer ${rawToken}`,
-    // 'x-access-token': rawToken,
-    // 'x-auth-token': rawToken,
+
   };
 };
 
@@ -39,6 +38,7 @@ const ClientProfile = () => {
   const [customerTypeId, setCustomerTypeId] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingTypes, setLoadingTypes] = useState(true);
+  const[clientDocuments, setClientDocuments]= useState([]); 
 
   const validateId = (id) => {
     const idRegex = /^\d{13}$/;
@@ -57,7 +57,7 @@ const ClientProfile = () => {
 
     return getStoredToken();
   };
-useEffect(() => {
+  useEffect(() => {
   const loadData = async () => {
     setLoadingTypes(true);
     try {
@@ -69,16 +69,21 @@ useEffect(() => {
       }
 
   
-      const [typesResponse, profileResponse] = await Promise.all([
+      const [typesResponse, profileResponse, clientResponse] = await Promise.all([
         axios.get('/client/v1/types', {
           headers: { Authorization: `Bearer ${token}` },
         }),
         axios.get('/client/v1/profile', {
           headers: { Authorization: `Bearer ${token}` },
+        }),
+        axios.get('/client/v1/profile/documents', {
+          headers: {Authorization: `  Bearer ${token}`}
         }).catch(() => null), 
       ]);
 
       setCustomerTypes(typesResponse.data.customerTypes || []);
+      setClientDocuments(clientResponse.data.clientDocuments || []); 
+
 
       
       if (profileResponse?.data) {
@@ -104,6 +109,7 @@ useEffect(() => {
 
   loadData();
 }, [navigate]);
+
   const handleSubmit = async (e) => {
   e.preventDefault();
 
@@ -147,7 +153,7 @@ useEffect(() => {
 
     console.log('Profile created:', response.data);
     toast.success('Profile completed successfully!');
-    navigate('/home');
+    navigate('/profile-verification');
 
   } catch (error) {
     console.error('Profile error:', error);
