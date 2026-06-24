@@ -19,7 +19,7 @@ const Login = () => {
     try {
       setLoading(true);
 
-      // 1. Firebase login
+  
       const userCredential = await signInWithEmailAndPassword(auth, username, password);
       const user = userCredential.user;
 
@@ -42,7 +42,9 @@ const Login = () => {
       console.log('Backend response:', backendResponse.data); 
 
       const loginAccessKey = backendResponse.data.loginAccessKey;
-console.log('Stored token:', loginAccessKey);
+      console.log('Logging in as:', username);
+console.log('Token received:', loginAccessKey);
+      console.log('Stored token:', loginAccessKey);
       if (!loginAccessKey) {
         alert("Backend login failed. Please try again.");
         return;

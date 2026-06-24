@@ -39,6 +39,7 @@ const ClientProfile = () => {
   const [loading, setLoading] = useState(false);
   const [loadingTypes, setLoadingTypes] = useState(true);
   const[clientDocuments, setClientDocuments]= useState([]); 
+  const [customerProfile, setCustomerProfile] = useState(null);
 
   const validateId = (id) => {
     const idRegex = /^\d{13}$/;
@@ -92,6 +93,7 @@ const ClientProfile = () => {
         setLastName(p.lastName || '');
         setIdNumber(p.idNumber || '');
         setCustomerTypeId(p.customerTypeId || '');
+        setCustomerProfile(profileResponse.data); 
       }
 
     } catch (error) {
@@ -143,15 +145,15 @@ const ClientProfile = () => {
       customerTypeId,
     };
 
-    const response = await axios.post(
-      '/client/v1/profile',
-      payload,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    );
+ const method = customerProfile ? "patch" : "post"; 
 
-    console.log('Profile created:', response.data);
+  const patchClientResponse = await axios[method](`/client/v1/profile`, payload , {
+    headers: {Authorization:  `Bearer ${token}`}, 
+  });
+
+  setCustomerProfile(patchClientResponse.data); 
+
+    console.log('Profile created:', patchClientResponse.data);
     toast.success('Profile completed successfully!');
     navigate('/profile-verification');
 
@@ -166,6 +168,9 @@ const ClientProfile = () => {
   } finally {
     setLoading(false);
   }
+
+ 
+
 };
 
   return (
@@ -228,7 +233,7 @@ const ClientProfile = () => {
             disabled={loading}
             className="w-full bg-[#001580] text-white py-3 rounded-md hover:bg-gray-900 transition"
           >
-            {loading ? 'Saving...' : 'Complete Profile'}
+           {loading ? 'Saving...' : customerProfile ? 'Update Profile' : 'Complete Profile'}
           </button>
         </form>
       </div>
