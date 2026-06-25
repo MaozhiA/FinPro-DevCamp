@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { categorizeProduct } from '../../utils/cat-prod.jsx';
 import { recommendedProducts, newArrivals } from '../../data/mock-data.jsx';
+
+
+
 
 const categoryColors = {
   insurance: 'from-slate-900 via-slate-700 to-slate-800',
@@ -108,9 +111,10 @@ const AdvisorContactForm = ({ productName }) => {
 const ProductDetails = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const navigate =useNavigate(); 
 
   useEffect(() => {
-    // Combine all products from mock data
+  
     const allProducts = [...recommendedProducts, ...newArrivals];
     const found = allProducts.find((item) => String(item.id) === String(id));
     setProduct(found || null);
@@ -238,7 +242,13 @@ const ProductDetails = () => {
                   </p>
                 </div>
 
-                <button className="w-full bg-slate-900 text-white py-4 rounded-xl font-semibold hover:bg-slate-800 transition mb-3">
+                <button
+                   onClick={() => navigate('/client-profile')}
+                className="
+                w-full bg-slate-900 text-white py-4 
+                
+                rounded-xl font-semibold hover:bg-slate-800
+                 transition mb-3">
                   Buy now
                 </button>
 

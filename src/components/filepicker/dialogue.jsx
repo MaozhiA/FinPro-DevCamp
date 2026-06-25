@@ -3,8 +3,9 @@ import { useFilePicker } from "use-file-picker";
 import { FileAmountLimitValidator, FileSizeValidator } from "use-file-picker/validators";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase";
+import axios from 'axios';
 
-const FilePicker = ({ type, onUploadSuccess }) => {
+const FilePicker = ({ type, onUploadSuccess, customerId }) => {
 
   const [showCamera, setShowCamera] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null); // ← new
@@ -12,6 +13,7 @@ const FilePicker = ({ type, onUploadSuccess }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
+     
 
   const isMobile = /iPhone|iPad|Android/i.test(navigator.userAgent);
 
@@ -20,16 +22,18 @@ const FilePicker = ({ type, onUploadSuccess }) => {
     await uploadBytes(fileRef, fileBlob);
     const url = await getDownloadURL(fileRef);
     console.log("Uploaded:", url);
-    onUploadSuccess(type); 
+
     
     return url;
   };
-
-  const handleCameraCapture = async (e) => {
+const handleCameraCapture = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     await uploadFile(file, file.name);
-  };
+    localStorage.setItem(`uploaded_${type}`, 'true');
+    onUploadSuccess(type);  // ← add this
+};
+
 
   const openWebcam = async () => {
     setShowCamera(true);
@@ -57,11 +61,13 @@ const FilePicker = ({ type, onUploadSuccess }) => {
   };
 
  
-  const handleSubmit = async () => {
+ const handleSubmit = async () => {
     await uploadFile(capturedImage.blob, `selfie-${Date.now()}.png`);
-    URL.revokeObjectURL(capturedImage.previewURL); // ← free memory
+    URL.revokeObjectURL(capturedImage.previewURL);
     setCapturedImage(null);
-  };
+    localStorage.setItem(`uploaded_${type}`, 'true');
+    onUploadSuccess(type);
+};
 
 
   const handleRetake = () => {
@@ -91,11 +97,33 @@ const FilePicker = ({ type, onUploadSuccess }) => {
       new FileAmountLimitValidator({ max: 1 }),
       new FileSizeValidator({ maxFileSize: 10 * 1024 * 1024 }),
     ],
-    onFilesSuccessfullySelected: async ({ filesContent }) => {
-      const file = filesContent[0];
-      const blob = await fetch(file.content).then(r => r.blob());
-      await uploadFile(blob, file.name);
-    },
+
+    
+   onFilesSuccessfullySelected: async ({ filesContent }) => {
+    const file = filesContent[0];
+    const token = localStorage.getItem('loginAccessKey');
+    const base64Content = file.content.split(',')[1];
+    const extension = file.name.split('.').pop().toUpperCase();
+    const typeMap = { 'PDF': 'PDF', 'PNG': 'PNG', 'JPG': 'JPEG', 'JPEG': 'JPEG' };
+    const fileType = typeMap[extension] || 'PDF';
+
+   
+    const blob = await fetch(file.content).then(r => r.blob());
+    await uploadFile(blob, file.name);
+
+try {
+    await axios.post(
+        `/v1/customer/${customerId}/documents`,
+        { document: base64Content, type: fileType },
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+} catch (error) {
+    console.error('Backend document save failed:', error);
+}
+
+  localStorage.setItem(`uploaded_${type}`, 'true');
+  onUploadSuccess(type);
+   }
   });
 
   const handlePick = () => {

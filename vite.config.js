@@ -17,6 +17,10 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
+      '/v1/customer': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
       '/firebase-storage': {
         target: 'https://firebasestorage.googleapis.com',
         changeOrigin: true,

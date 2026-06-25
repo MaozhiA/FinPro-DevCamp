@@ -68,9 +68,7 @@ const ClientProfile = () => {
         navigate('/login');
         return;
       }
-
-  
-      const [typesResponse, profileResponse, clientResponse] = await Promise.all([
+     const [typesResponse, profileResponse, clientResponse] = await Promise.all([
         axios.get('/client/v1/types', {
           headers: { Authorization: `Bearer ${token}` },
         }),
@@ -81,18 +79,14 @@ const ClientProfile = () => {
           headers: {Authorization: `  Bearer ${token}`}
         }).catch(() => null), 
       ]);
-
       setCustomerTypes(typesResponse.data.customerTypes || []);
-      setClientDocuments(clientResponse.data.clientDocuments || []); 
-
-
-      
+      setClientDocuments(clientResponse?.data?.clientDocuments || []); 
       if (profileResponse?.data) {
         const p = profileResponse.data;
         setFirstName(p.firstName || '');
         setLastName(p.lastName || '');
         setIdNumber(p.idNumber || '');
-        setCustomerTypeId(p.customerTypeId || '');
+        setCustomerTypeId(p.customerType?.id || '');
         setCustomerProfile(profileResponse.data); 
       }
 

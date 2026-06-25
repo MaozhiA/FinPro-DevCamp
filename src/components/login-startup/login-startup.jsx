@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { auth } from "../../firebase";
 import { signInAnonymously } from "firebase/auth";
-import FinPro from '../../assets/FinPro (3).png';
+import FinPro from '../../assets/INS.png';
 
 const LoginStart = () => {
     const navigate = useNavigate();

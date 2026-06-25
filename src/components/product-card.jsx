@@ -11,25 +11,12 @@ const ProductCard = ({ product }) => {
     'investments': 'Investment',
     'other': 'Product',
   };
-
-  const categoryColors = {
-    'device contracts': { 
-      badge: 'bg-emerald-100 text-emerald-700', 
-      placeholder: 'bg-emerald-50' 
-    },
-    'insurance': { 
-      badge: 'bg-slate-800 text-white', 
-      placeholder: 'bg-slate-900' 
-    },
-    'investments': { 
-      badge: 'bg-sky-100 text-sky-700', 
-      placeholder: 'bg-sky-50' 
-    },
-    'other': { 
-      badge: 'bg-slate-100 text-slate-700', 
-      placeholder: 'bg-slate-50' 
-    },
-  };
+const categoryColors = {
+    'device contracts': { badge: 'bg-emerald-100 text-emerald-700' },
+    'insurance': { badge: 'bg-slate-800 text-white' },
+    'investments': { badge: 'bg-sky-100 text-sky-700' },
+    'other': { badge: 'bg-slate-100 text-slate-700' },
+};
 
   const colors = categoryColors[productCategory] || categoryColors.other;
   const categoryLabel = categoryLabels[productCategory] || 'Product';
@@ -49,13 +36,16 @@ const ProductCard = ({ product }) => {
             className="h-full text-black w-full object-cover"
           />
         ) : (
-          <div className="flex h-full w-full flex-col items-center justify-center px-4">
-            <p className="text-sm text-black font-medium opacity-70">{categoryLabel}</p>
-          </div>
-        )}
-      </div>
-
-   
+    <div className="flex h-full w-full flex-col items-center justify-center px-4 bg-slate-900">
+        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/50 mb-1">
+            {categoryLabel}
+        </p>
+        <p className="text-sm font-bold text-white">
+            {product.name}
+        </p>
+    </div>
+)}          
+</div>     
       <div className="p-4 flex flex-col flex-grow">
      
         <div className="mb-2">

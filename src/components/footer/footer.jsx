@@ -87,10 +87,10 @@ const Footer = () => {
 
         <div className="border-t border-gray-100 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
           <p className="text-xs text-gray-400">
-            © {year} FinPro. All rights reserved.
+            © {year} InsureTechGuard. All rights reserved.
           </p>
           <p className="text-xs text-gray-400">
-            FinPro is an NCR regulated and registered credit provider.
+          InsureTechGuard is an NCR regulated and registered credit provider.
           </p>
         </div>
       </div>

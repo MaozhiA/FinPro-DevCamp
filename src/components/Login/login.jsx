@@ -6,7 +6,7 @@ import axios from 'axios';
 import { auth } from '../../firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
-import FinPro from '../../assets/FinPro (1).png';
+import FinPro from '../../assets/INS.png';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -43,7 +43,7 @@ const Login = () => {
 
       const loginAccessKey = backendResponse.data.loginAccessKey;
       console.log('Logging in as:', username);
-console.log('Token received:', loginAccessKey);
+      console.log('Token received:', loginAccessKey);
       console.log('Stored token:', loginAccessKey);
       if (!loginAccessKey) {
         alert("Backend login failed. Please try again.");
