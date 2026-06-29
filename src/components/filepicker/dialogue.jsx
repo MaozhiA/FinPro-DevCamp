@@ -134,30 +134,31 @@ try {
   if (errors.length) return <div>Error...</div>;
 
   return (
-    <div>
-      <ul>
+    <div className="space-y-3">
         {type === "document" && (
-          <li>
-            <button onClick={() => handlePick("document")}>Upload Document</button>
-          </li>
+            <button onClick={() => handlePick()} className="w-full flex items-center gap-3 p-4 border border-slate-200 rounded-xl hover:bg-slate-50 transition text-left">
+                <div>
+                    <p className="text-sm font-semibold text-slate-900">Upload Document</p>
+                    <p className="text-xs text-slate-500">PDF, DOC up to 10MB</p>
+                </div>
+            </button>
         )}
 
-        <li>
-          <button onClick={() => handlePick("photo")}>Upload Photo</button>
-          <input
-            type="file"
-            accept="image/*"
-            capture="user"
-            style={{ display: "none" }}
-            ref={cameraInputRef}
-            onChange={handleCameraCapture}
-          />
-        </li>
+        <button onClick={() => handlePick()} className="w-full flex items-center gap-3 p-4 border border-slate-200 rounded-xl hover:bg-slate-50 transition text-left">
+            <div>
+                <p className="text-sm font-semibold text-slate-900">Upload Photo</p>
+                <p className="text-xs text-slate-500">JPG, PNG up to 10MB</p>
+            </div>
+        </button>
 
-        <li>
-          <button onClick={handleSelfieClick}>Take photo with camera</button>
-        </li>
-      </ul>
+        <input type="file" accept="image/*" capture="user" style={{ display: "none" }} ref={cameraInputRef} onChange={handleCameraCapture} />
+
+        <button onClick={handleSelfieClick} className="w-full flex items-center gap-3 p-4 border border-slate-200 rounded-xl hover:bg-slate-50 transition text-left">
+            <div>
+                <p className="text-sm font-semibold text-slate-900">Take photo with camera</p>
+                <p className="text-xs text-slate-500">Use your device camera</p>
+            </div>
+        </button>
 
 
       {showCamera && (

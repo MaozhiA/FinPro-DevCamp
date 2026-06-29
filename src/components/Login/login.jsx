@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import axios from 'axios';
-
+import { analytics } from '../../firebase';
+import { logEvent } from 'firebase/analytics';
 import { auth } from '../../firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
@@ -52,7 +53,9 @@ const Login = () => {
 
       localStorage.setItem('loginAccessKey', loginAccessKey);
       console.log("Login successful:", user.email);
-      navigate("/home");
+      console.log('Token set:', localStorage.getItem('loginAccessKey'));
+        logEvent(analytics, 'login', {method : 'email'}); 
+      navigate("/client-profile");
 
     } catch (error) {
       console.error("Login failed:", error.message);
@@ -60,6 +63,7 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
+  
   };
 
   return (

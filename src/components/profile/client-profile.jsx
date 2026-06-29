@@ -58,7 +58,7 @@ const ClientProfile = () => {
 
     return getStoredToken();
   };
-  useEffect(() => {
+ useEffect(() => {
   const loadData = async () => {
     setLoadingTypes(true);
     try {
@@ -68,26 +68,41 @@ const ClientProfile = () => {
         navigate('/login');
         return;
       }
-     const [typesResponse, profileResponse, clientResponse] = await Promise.all([
-        axios.get('/client/v1/types', {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        axios.get('/client/v1/profile', {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        axios.get('/client/v1/profile/documents', {
-          headers: {Authorization: `  Bearer ${token}`}
-        }).catch(() => null), 
-      ]);
+
+      // Fetch types — always works
+      const typesResponse = await axios.get('/client/v1/types', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setCustomerTypes(typesResponse.data.customerTypes || []);
-      setClientDocuments(clientResponse?.data?.clientDocuments || []); 
-      if (profileResponse?.data) {
-        const p = profileResponse.data;
-        setFirstName(p.firstName || '');
-        setLastName(p.lastName || '');
-        setIdNumber(p.idNumber || '');
-        setCustomerTypeId(p.customerType?.id || '');
-        setCustomerProfile(profileResponse.data); 
+
+      // Fetch profile separately — may fail for new users
+      try {
+        const profileResponse = await axios.get('/client/v1/profile', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (profileResponse?.data) {
+          const p = profileResponse.data;
+          setFirstName(p.firstName || '');
+          setLastName(p.lastName || '');
+          setIdNumber(p.idNumber || '');
+          setCustomerTypeId(p.customerType?.id || '');
+          setCustomerProfile(profileResponse.data);
+        }
+      } catch (profileError) {
+        if (profileError.response?.status === 401) {
+          console.log('New user — no profile yet');
+          // Don't redirect — show empty form
+        }
+      }
+
+      // Fetch documents separately — may fail
+      try {
+        const clientResponse = await axios.get('/client/v1/profile/documents', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setClientDocuments(clientResponse?.data?.clientDocuments || []);
+      } catch (docError) {
+        console.log('No documents yet');
       }
 
     } catch (error) {

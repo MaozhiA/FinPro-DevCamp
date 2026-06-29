@@ -43,17 +43,17 @@ const checkPassword = (value) => {
     provider.setCustomParameters({
     prompt: 'select_account',
 });
-
-    const registerWithBackend = async (email, password) => {
-        try {
-            await axios.post('/v1/user', { username: email, password });
-        } catch (error) {
-           
-            if (error.response?.status !== 400) {
-                throw new Error('Backend registration failed');
-            }
+const registerWithBackend = async (email, password) => {
+    try {
+        const response = await axios.post('/v1/user', { username: email, password });
+        console.log('Backend registration:', response.data);
+    } catch (error) {
+        console.log('Backend registration failed:', error.response?.status, error.response?.data);
+        if (error.response?.status !== 400) {
+            throw new Error('Backend registration failed');
         }
-    };
+    }
+};
 
 
     const handleSubmit = async (e) => {
@@ -186,7 +186,7 @@ const checkPassword = (value) => {
 
                     {confirmEmail && (
     <p className={`text-xs mt-1 ${email === confirmEmail ? 'text-green-600' : 'text-red-500'}`}>
-        {email === confirmEmail ? '✓ Emails match' : '✗ Emails do not match'}
+        {email === confirmEmail ? ' Emails match' : ' Emails do not match'}
     </p>
 )}
                     </div>

@@ -16,6 +16,9 @@ const Navbar = () => {
     }, []);
 
     const handleLogout = async () => {
+            localStorage.removeItem('loginAccessKey');
+    localStorage.removeItem('uploaded_document');
+    localStorage.removeItem('uploaded_selfie');
         await signOut(auth);
         navigate('/login-startup');
     };
