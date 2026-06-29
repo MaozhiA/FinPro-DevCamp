@@ -12,6 +12,7 @@ import LoginStart from './components/login-startup/login-startup.jsx';
 import VerifyEmail from './components/email/verify-email.jsx';
 import ClientProfile from './components/profile/client-profile.jsx';
 import ProfileVerification from './components/verification/profile-verification.jsx'
+import CustomerAcounts from './components/account/customer-accounts.jsx';
 import FileDialgoue from './components/filepicker/dialogue.jsx'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -52,7 +53,7 @@ function App() {
           <Route path="/profile-verification" element={<ProfileVerification />} />
           <Route path="/dialogue" element={<FileDialgoue />} />
            
-          
+          <Route path="/customer-account" element={<CustomerAcounts/>} />
 
           <Route path="/products" element={<Products />} />
           <Route path="/recommended" element={<RecommendedPage />} />

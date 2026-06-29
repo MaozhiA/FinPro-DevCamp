@@ -23,6 +23,7 @@ const ProfileVerification = () =>
     });
   const customerProfileRef = useRef(null);
   const[documentProfile, setDocumentProfile]= useState([]); 
+  const[customerAccounts, setCustomerAccounts] = useState([]);
 
 
 const fetchClientData = async (userId) => {
@@ -56,6 +57,18 @@ const fetchClientData = async (userId) => {
 
     }
 
+    try{
+        const accountResponse = await axios.get(`/v1/accountTypes/${userId}`, {
+            headers: {Authorization: `Bearer ${token}`},
+        }); 
+        setCustomerAccounts(accountResponse.data);
+    }  catch(error) {
+        if(error.reponse?.status === 401 || error.response?.status === 500 ) {
+            setCustomerAccounts(null);
+        }else {
+            console.error("Error fetching accounts:", error);
+        }
+    } 
     try { 
 
 
@@ -66,7 +79,7 @@ const fetchClientData = async (userId) => {
 
     setDocumentProfile(fetchDcoumentResponse.data);
     const docs = fetchDcoumentResponse.data; 
-setVerified({
+    setVerified({
     document: localStorage.getItem('uploaded_document') === 'true',
     selfie: localStorage.getItem('uploaded_selfie') === 'true'
 });
@@ -163,13 +176,13 @@ setVerified({
                 </p>
             </div>
 
-            {/* Progress */}
+           
             <div className="flex items-center gap-2 mb-8">
                 <div className={`h-1.5 flex-1 rounded-full ${verified.document ? 'bg-green-500' : 'bg-slate-200'}`} />
                 <div className={`h-1.5 flex-1 rounded-full ${verified.selfie ? 'bg-green-500' : 'bg-slate-200'}`} />
             </div>
 
-            {/* Cards */}
+    
             <div className="space-y-4">
                 <div
                     onClick={() => openDialog("document")}
