@@ -1,13 +1,13 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import axios from 'axios';
-import { analytics } from '../../firebase';
-import { logEvent } from 'firebase/analytics';
-import { auth } from '../../firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import axios from "axios";
+import { analytics } from "../../firebase";
+import { logEvent } from "firebase/analytics";
+import { auth } from "../../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
-import FinPro from '../../assets/INS.png';
+import FinPro from "../../assets/INS.png";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -20,8 +20,11 @@ const Login = () => {
     try {
       setLoading(true);
 
-  
-      const userCredential = await signInWithEmailAndPassword(auth, username, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        username,
+        password,
+      );
       const user = userCredential.user;
 
       if (!user.emailVerified) {
@@ -30,46 +33,42 @@ const Login = () => {
         return;
       }
 
-  
       const backendResponse = await axios.post(
-        '/v1/token',
+        "/v1/token",
         {},
         {
           headers: {
             Authorization: `Basic ${btoa(`${username}:${password}`)}`,
           },
-        }
+        },
       );
-      console.log('Backend response:', backendResponse.data); 
+      console.log("Backend response:", backendResponse.data);
 
       const loginAccessKey = backendResponse.data.loginAccessKey;
-      console.log('Logging in as:', username);
-      console.log('Token received:', loginAccessKey);
-      console.log('Stored token:', loginAccessKey);
+      console.log("Logging in as:", username);
+      console.log("Token received:", loginAccessKey);
+      console.log("Stored token:", loginAccessKey);
       if (!loginAccessKey) {
         alert("Backend login failed. Please try again.");
         return;
       }
 
-      localStorage.setItem('loginAccessKey', loginAccessKey);
+      localStorage.setItem("loginAccessKey", loginAccessKey);
       console.log("Login successful:", user.email);
-      console.log('Token set:', localStorage.getItem('loginAccessKey'));
-        logEvent(analytics, 'login', {method : 'email'}); 
+      console.log("Token set:", localStorage.getItem("loginAccessKey"));
+      logEvent(analytics, "login", { method: "email" });
       navigate("/client-profile");
-
     } catch (error) {
       console.error("Login failed:", error.message);
       alert(error.message);
     } finally {
       setLoading(false);
     }
-  
   };
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center px-6">
       <div className="w-full max-w-md">
-
         <div className="mb-8 flex justify-center">
           <img src={FinPro} alt="FinPro" className="h-64 w-64 object-cover" />
         </div>
@@ -78,7 +77,9 @@ const Login = () => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label className="flex text-sm font-medium text-black mb-1">Email</label>
+            <label className="flex text-sm font-medium text-black mb-1">
+              Email
+            </label>
             <input
               type="email"
               {...register("username")}
@@ -88,7 +89,9 @@ const Login = () => {
           </div>
 
           <div>
-            <label className="flex text-sm font-medium text-black mb-1">Password</label>
+            <label className="flex text-sm font-medium text-black mb-1">
+              Password
+            </label>
             <input
               type="password"
               {...register("password")}
@@ -108,11 +111,13 @@ const Login = () => {
 
         <div className="mt-8 flex justify-between text-sm">
           <p className="text-gray-500">New customer?</p>
-          <a href="/register" className="text-black font-medium hover:underline">
+          <a
+            href="/register"
+            className="text-black font-medium hover:underline"
+          >
             Create account
           </a>
         </div>
-
       </div>
     </div>
   );

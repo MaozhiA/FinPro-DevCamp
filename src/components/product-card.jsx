@@ -61,7 +61,6 @@ const categoryColors = {
           {product.description}
         </p>
 
-        {/* Footer: Price and CTA */}
         <div className="flex items-center justify-between gap-3 pt-3 border-t border-slate-100">
           <span className="text-base font-bold text-slate-900">{priceDisplay}</span>
           <span className="text-sm font-semibold text-sky-600 group-hover:text-sky-700 group-hover:gap-2 flex items-center gap-1 transition-all">

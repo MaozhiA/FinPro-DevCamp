@@ -95,7 +95,6 @@ const Products = () => {
         )}
     </div>
 
-    {/* Card content */}
     <div className="p-4 flex flex-col flex-1">
         <p className="text-xs font-medium uppercase text-sky-600 mb-1">
             {product.category}

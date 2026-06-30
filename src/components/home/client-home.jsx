@@ -7,17 +7,10 @@ const ClientHome = ({ user }) => {
   const visibleRecommended = recommendedProducts.slice(0, 3);
   const visibleNewArrivals = newArrivals.slice(0, 3);
 
-  const firstName = user?.displayName?.split(' ')[0] || 'there';
-
-//   const quickActions = [
-//     { label: 'My Applications', icon: '📋', route: '/applications' },
-//     { label: 'Active Contracts', icon: '📄', route: '/contracts' },
-//     { label: 'Support', icon: '💬', route: '/support' },
-//   ];
-
+  const firstName = user?.displayName?.split(" ")[0] || "there";
   return (
     <div className="max-w-6xl mx-auto px-6 py-8">
-        <Carousel />
+      <Carousel />
       {/* Welcome Section */}
       {/* <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900">Welcome back</h1>
@@ -42,7 +35,9 @@ const ClientHome = ({ user }) => {
       <div className="mb-10">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">Recommended for you</h2>
+            <h2 className="text-lg font-semibold text-slate-900">
+              Recommended for you
+            </h2>
           </div>
           <Link
             to="/recommended"
@@ -59,11 +54,12 @@ const ClientHome = ({ user }) => {
         </div>
       </div>
 
-
       <div>
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">New Arrivals</h2>
+            <h2 className="text-lg font-semibold text-slate-900">
+              New Arrivals
+            </h2>
           </div>
           <Link
             to="/new-arrivals"

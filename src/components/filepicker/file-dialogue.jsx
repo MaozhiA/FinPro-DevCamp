@@ -4,11 +4,11 @@ const FileDialogue = ({ onClose, type, onUploadSuccess, customerId }) => {
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
       <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-        
-        {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-slate-900">
-            {type === "document" ? "Upload Proof of Residence" : "Upload Selfie"}
+            {type === "document"
+              ? "Upload Proof of Residence"
+              : "Upload Selfie"}
           </h3>
           <button
             onClick={onClose}
@@ -30,7 +30,6 @@ const FileDialogue = ({ onClose, type, onUploadSuccess, customerId }) => {
         >
           Cancel
         </button>
-
       </div>
     </div>
   );
