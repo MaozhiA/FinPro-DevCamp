@@ -57,7 +57,41 @@ const Login = () => {
       console.log("Login successful:", user.email);
       console.log("Token set:", localStorage.getItem("loginAccessKey"));
       logEvent(analytics, "login", { method: "email" });
-      navigate("/client-profile");
+
+      try {
+        const profileResponse = await axios.get(`/client/v1/profile`, {
+          headers: {
+            Authorization: `Bearer ${loginAccessKey}`,
+          },
+        });
+
+        const profileData = profileResponse.data;
+        console.log("Profile data:", profileData);
+        const docsResponse = await axios.get(`/client/v1/profile/documents`, {
+          headers: { Authorization: `Bearer ${loginAccessKey}` },
+        });
+        const docs = docsResponse.data;
+        console.log("Documents from login:", docs);
+        if (docs && docs.length >= 2) {
+          localStorage.setItem("uploaded_document", "true");
+          localStorage.setItem("uploaded_selfie", "true");
+        } else if (docs && docs.length === 1) {
+          localStorage.setItem("uploaded_document", "true");
+        }
+        const profileExists = profileData && profileData.id;
+        if (!profileExists) {
+          navigate("/client-profile");
+        } else if (
+          !profileData.customerAccounts ||
+          profileData.customerAccounts.length === 0
+        ) {
+          navigate("/customer-accounts");
+        } else {
+          navigate("/home");
+        }
+      } catch (profileError) {
+        navigate("/client-profile");
+      }
     } catch (error) {
       console.error("Login failed:", error.message);
       alert(error.message);

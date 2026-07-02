@@ -1,21 +1,27 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { categorizeProduct } from '../../utils/cat-prod.jsx';
-import { recommendedProducts, newArrivals } from '../../data/mock-data.jsx';
-import { auth } from '../../firebase';
-
-
-
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { categorizeProduct } from "../../utils/cat-prod.jsx";
+import { recommendedProducts, newArrivals } from "../../data/mock-data.jsx";
+import { auth } from "../../firebase";
+import { addToCart } from "../../utils/cart-func.jsx";
+// import { Auth } from "firebase-admin/auth";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const categoryColors = {
-  insurance: 'from-slate-900 via-slate-700 to-slate-800',
-  investments: 'from-sky-800 via-sky-600 to-sky-700',
-  'device contracts': 'from-emerald-800 via-emerald-600 to-emerald-700',
-  other: 'from-slate-600 via-slate-500 to-slate-700',
+  insurance: "from-slate-900 via-slate-700 to-slate-800",
+  investments: "from-sky-800 via-sky-600 to-sky-700",
+  "device contracts": "from-emerald-800 via-emerald-600 to-emerald-700",
+  other: "from-slate-600 via-slate-500 to-slate-700",
 };
 
 const AdvisorContactForm = ({ productName }) => {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -28,12 +34,10 @@ const AdvisorContactForm = ({ productName }) => {
     setSubmitting(true);
 
     try {
-      // Replace with your actual endpoint once available
-      // await axios.post('/client/v1/advisor-request', { ...form, productName });
-      await new Promise((res) => setTimeout(res, 800)); // placeholder delay
+      await new Promise((res) => setTimeout(res, 800));
       setSubmitted(true);
     } catch (error) {
-      console.error('Failed to submit advisor request:', error);
+      console.error("Failed to submit advisor request:", error);
     } finally {
       setSubmitting(false);
     }
@@ -42,7 +46,9 @@ const AdvisorContactForm = ({ productName }) => {
   if (submitted) {
     return (
       <div className="bg-white rounded-2xl p-8 border border-slate-200">
-        <h3 className="font-semibold text-slate-900 mb-2">Thanks — we've got it</h3>
+        <h3 className="font-semibold text-slate-900 mb-2">
+          Thanks — we've got it
+        </h3>
         <p className="text-sm text-slate-600">
           An advisor will reach out to you shortly about {productName}.
         </p>
@@ -51,9 +57,14 @@ const AdvisorContactForm = ({ productName }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-2xl p-8 border border-slate-200 space-y-4">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white rounded-2xl p-8 border border-slate-200 space-y-4"
+    >
       <div>
-        <label className="flex text-sm font-medium text-slate-700 mb-1">Full name</label>
+        <label className="flex text-sm font-medium text-slate-700 mb-1">
+          Full name
+        </label>
         <input
           type="text"
           name="name"
@@ -65,7 +76,9 @@ const AdvisorContactForm = ({ productName }) => {
       </div>
 
       <div>
-        <label className="flex text-sm font-medium text-slate-700 mb-1">Email</label>
+        <label className="flex text-sm font-medium text-slate-700 mb-1">
+          Email
+        </label>
         <input
           type="email"
           name="email"
@@ -77,7 +90,9 @@ const AdvisorContactForm = ({ productName }) => {
       </div>
 
       <div>
-        <label className="flex text-sm font-medium text-slate-700 mb-1">Phone</label>
+        <label className="flex text-sm font-medium text-slate-700 mb-1">
+          Phone
+        </label>
         <input
           type="tel"
           name="phone"
@@ -88,7 +103,9 @@ const AdvisorContactForm = ({ productName }) => {
       </div>
 
       <div>
-        <label className="flex text-sm font-medium text-slate-700 mb-1">Message (optional)</label>
+        <label className="flex text-sm font-medium text-slate-700 mb-1">
+          Message (optional)
+        </label>
         <textarea
           name="message"
           value={form.message}
@@ -103,7 +120,7 @@ const AdvisorContactForm = ({ productName }) => {
         disabled={submitting}
         className="w-full bg-slate-900 text-white py-3 rounded-xl font-semibold hover:bg-slate-800 transition disabled:opacity-60"
       >
-        {submitting ? 'Sending...' : 'Request a callback'}
+        {submitting ? "Sending..." : "Request a callback"}
       </button>
     </form>
   );
@@ -112,18 +129,55 @@ const AdvisorContactForm = ({ productName }) => {
 const ProductDetails = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const navigate =useNavigate(); 
-  const handleBuyNow = () => {
+  const navigate = useNavigate();
+
+  const handleBuyNow = async () => {
     const user = auth.currentUser;
-    if(user) {
-        navigate('/client-profile');
-    } else {
-        navigate('/login');
+    const token = localStorage.getItem("loginAccessKey");
+
+    if (!user) {
+      navigate("/login");
+      return;
     }
-};
+
+    const customerProfile = await axios.get(`/client/v1/profile`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    // const customerId = customerProfile.data.id; // this might be wrong
+
+    try {
+      const eligibilityResponse = await axios.post(
+        `/v1/product/eligibility`,
+        {
+          customerId: customerProfile.data.id,
+          productIds: [product.id],
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      const result = eligibilityResponse.data[0];
+      const isEligible = result.isEligible;
+
+      if (isEligible) {
+        const addedToCart = addToCart(product);
+        if (addedToCart) {
+          toast.success("Product added to cart successfully!");
+        } else {
+          toast.info("Product is already in the cart.");
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching eligibility", error);
+      toast.error("An error occurred while checking eligibility.");
+    }
+  };
 
   useEffect(() => {
-  
     const allProducts = [...recommendedProducts, ...newArrivals];
     const found = allProducts.find((item) => String(item.id) === String(id));
     setProduct(found || null);
@@ -140,36 +194,34 @@ const ProductDetails = () => {
   }
 
   const benefits = product.benefits || [
-    'Theft and loss recovery',
-    'Comprehensive coverage',
-    'Hardware malfunction coverage',
+    "Theft and loss recovery",
+    "Comprehensive coverage",
+    "Hardware malfunction coverage",
   ];
   const requirements = product.requirements || [
-    'Minimum age of 18 years old',
-    'South African resident',
-    'Have an account with us in good standing',
+    "Minimum age of 18 years old",
+    "South African resident",
+    "Have an account with us in good standing",
   ];
 
-  // Benefit icons mapping
   const benefitIcons = {
-    'Theft and loss recovery': '',
-    'Comprehensive coverage': '',
-    'Hardware malfunction coverage': '',
+    "Theft and loss recovery": "",
+    "Comprehensive coverage": "",
+    "Hardware malfunction coverage": "",
   };
 
-  // Get long description or fallback to different text
-  const longDescription = product.longDescription || product.about ||
-    'This product is designed to provide you with comprehensive financial solutions tailored to your specific needs. We combine flexibility, competitive pricing, and expert support to ensure you get the best value for your financial journey.';
+  const longDescription =
+    product.longDescription ||
+    product.about ||
+    "This product is designed to provide you with comprehensive financial solutions tailored to your specific needs. We combine flexibility, competitive pricing, and expert support to ensure you get the best value for your financial journey.";
 
-  // Get billing period or default to "per month"
-  const billingPeriod = product.billingPeriod || 'per month';
+  const billingPeriod = product.billingPeriod || "per month";
 
   const productCategory = categorizeProduct(product);
   const productColor = categoryColors[productCategory] || categoryColors.other;
 
   return (
     <div className="min-h-screen bg-white">
-
       <div className="border-b border-slate-200">
         {/* <div className="max-w-6xl mx-auto px-6 py-4">
           <Link to="/products" className="text-sm text-slate-600 hover:text-slate-900 flex items-center gap-2">
@@ -178,11 +230,9 @@ const ProductDetails = () => {
         </div> */}
       </div>
 
-
       <div className={`bg-gradient-to-br ${productColor} py-10 md:py-4`}>
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-
             <div className="flex items-center justify-center">
               {product.imageUrl ? (
                 <img
@@ -200,7 +250,6 @@ const ProductDetails = () => {
                 </div>
               )}
             </div>
-
 
             <div className="text-white">
               <p className="text-sm font-semibold uppercase tracking-[0.3em] opacity-90 mb-4">
@@ -226,12 +275,9 @@ const ProductDetails = () => {
         </div>
       </div>
 
-
       <div className="max-w-6xl mx-auto px-6 py-16">
-
         <div className="mb-16">
           <div className="grid lg:grid-cols-3 gap-8">
-
             <div>
               <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl p-8 sticky top-8">
                 <p className="text-sm text-slate-600 font-medium mb-2">From</p>
@@ -239,9 +285,7 @@ const ProductDetails = () => {
                   <p className="text-5xl font-bold text-slate-900">
                     R {product.price}
                   </p>
-                  <p className="text-sm text-slate-600">
-                    {billingPeriod}
-                  </p>
+                  <p className="text-sm text-slate-600">{billingPeriod}</p>
                 </div>
 
                 <div className="flex items-center gap-2 mb-8 pb-6 border-b border-slate-200">
@@ -252,11 +296,11 @@ const ProductDetails = () => {
                 </div>
 
                 <button
-                 onClick={handleBuyNow}
-                className="w-full bg-slate-900 text-white py-4 rounded-xl 
+                  onClick={handleBuyNow}
+                  className="w-full bg-slate-900 text-white py-4 rounded-xl 
                 font-semibold hover:bg-slate-800 transition mb-3"
                 >
-               Buy now
+                  Buy now
                 </button>
 
                 <p className="text-xs text-slate-500 mt-6 text-center">
@@ -268,7 +312,9 @@ const ProductDetails = () => {
             <div className="lg:col-span-2">
               <div className="space-y-8">
                 <div>
-                  <h2 className="flex text-2xl font-bold text-slate-900 mb-4">About this product</h2>
+                  <h2 className="flex text-2xl font-bold text-slate-900 mb-4">
+                    About this product
+                  </h2>
                   <p className="text-slate-600 leading-relaxed text-lg">
                     {longDescription}
                   </p>
@@ -276,12 +322,22 @@ const ProductDetails = () => {
 
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div className="p-6 bg-slate-50 rounded-xl">
-                    <h3 className="font-semibold text-slate-900 mb-2">Key benefit</h3>
-                    <p className="text-sm text-slate-600">Designed to meet your financial needs with flexibility and ease.</p>
+                    <h3 className="font-semibold text-slate-900 mb-2">
+                      Key benefit
+                    </h3>
+                    <p className="text-sm text-slate-600">
+                      Designed to meet your financial needs with flexibility and
+                      ease.
+                    </p>
                   </div>
                   <div className="p-6 bg-slate-50 rounded-xl">
-                    <h3 className="font-semibold text-slate-900 mb-2">Who it's for</h3>
-                    <p className="text-sm text-slate-600">Anyone looking for reliable financial solutions and peace of mind.</p>
+                    <h3 className="font-semibold text-slate-900 mb-2">
+                      Who it's for
+                    </h3>
+                    <p className="text-sm text-slate-600">
+                      Anyone looking for reliable financial solutions and peace
+                      of mind.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -289,17 +345,17 @@ const ProductDetails = () => {
           </div>
         </div>
 
-
         <div className="border-t border-slate-200 pt-16 pb-16">
           <div className="grid lg:grid-cols-2 gap-10">
-
             <div>
-              <h2 className="flex text-2xl font-bold text-slate-900 mb-8">Key benefits</h2>
+              <h2 className="flex text-2xl font-bold text-slate-900 mb-8">
+                Key benefits
+              </h2>
               <ul className="space-y-4">
                 {benefits.map((item, idx) => (
                   <li key={idx} className="gap-3">
                     <span className="text-lg flex-shrink-0 mt-0.5">
-                      {benefitIcons[item] || ''}
+                      {benefitIcons[item] || ""}
                     </span>
                     <span className="flex text-slate-700">{item}</span>
                   </li>
@@ -307,12 +363,15 @@ const ProductDetails = () => {
               </ul>
             </div>
 
-
             <div>
-              <h2 className="flex text-2xl font-bold text-slate-900 mb-8">Requirements</h2>
+              <h2 className="flex text-2xl font-bold text-slate-900 mb-8">
+                Requirements
+              </h2>
               <ul className="space-y-4">
                 {requirements.map((item, idx) => (
-                  <li key={idx} className=" flex text-slate-700">{item}</li>
+                  <li key={idx} className=" flex text-slate-700">
+                    {item}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -323,13 +382,12 @@ const ProductDetails = () => {
             so it reads as a continuation of the page, not a separate bolted-on section */}
         <div className="border-t border-slate-200 pt-16 pb-4">
           <div className="grid lg:grid-cols-5 gap-10">
-
             <div className="lg:col-span-2">
               <h2 className="text-2xl font-bold text-slate-900 mb-4">
                 Need help choosing?
               </h2>
               <p className="text-slate-600 leading-relaxed mb-6">
-                Our team can walk you through pricing, eligibility, and whether{' '}
+                Our team can walk you through pricing, eligibility, and whether{" "}
                 {product.name} is the right fit for you. Leave your details and
                 an advisor will get back to you.
               </p>
@@ -352,11 +410,9 @@ const ProductDetails = () => {
             <div className="lg:col-span-3">
               <AdvisorContactForm productName={product.name} />
             </div>
-
           </div>
         </div>
       </div>
-
     </div>
   );
 };

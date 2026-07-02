@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { auth } from "../../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
+import { ShoppingCart } from "lucide-react";
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
+  const [cartCount, setCartCount] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,11 +16,22 @@ const Navbar = () => {
 
     return unsubscribe;
   }, []);
+  useEffect(() => {
+    const updateCount = () => {
+      const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
+      setCartCount(cart.length);
+    };
+
+    updateCount();
+    window.addEventListener("cartUpdated", updateCount);
+
+    return () => window.removeEventListener("cartUpdated", updateCount);
+  }, []);
 
   const handleLogout = async () => {
     localStorage.removeItem("loginAccessKey");
-    localStorage.removeItem("uploaded_document");
-    localStorage.removeItem("uploaded_selfie");
+    // localStorage.removeItem("uploaded_document");
+    // localStorage.removeItem("uploaded_selfie");
     await signOut(auth);
     navigate("/login-startup");
   };
@@ -85,6 +98,17 @@ const Navbar = () => {
             </button>
           </>
         )}
+        <Link to="/cart" className="relative">
+          <ShoppingCart size={20} className="text-slate-600" />
+          {cartCount > 0 && (
+            <span
+              className="absolute -top-2 -right-2 bg-red-500 text-white 
+            text-xs rounded-full w-4 h-4 flex items-center justify-center"
+            >
+              {cartCount}
+            </span>
+          )}
+        </Link>
 
         {user && user.isAnonymous && (
           <>

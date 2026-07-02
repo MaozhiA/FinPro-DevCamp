@@ -20,6 +20,7 @@ const ProfileVerification = () => {
     selfie: false,
   });
   const customerProfileRef = useRef(null);
+
   const [documentProfile, setDocumentProfile] = useState([]);
   const [customerAccounts, setCustomerAccounts] = useState([]);
   const [accountTypes, seAccountTypes] = useState([]);

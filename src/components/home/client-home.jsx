@@ -9,7 +9,7 @@ const ClientHome = ({ user }) => {
 
   const firstName = user?.displayName?.split(" ")[0] || "there";
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8">
+    <div className="max-w-6xl mx-auto px-6 py-8 bg-white">
       <Carousel />
       {/* Welcome Section */}
       {/* <div className="mb-8">
